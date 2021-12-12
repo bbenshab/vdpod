@@ -1,0 +1,77 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: vdpod-disk
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ocs-storagecluster-ceph-rbd
+  resources:
+    requests:
+      storage: 64Gi
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: vdpod
+  namespace: default
+spec:
+  nodeSelector:
+  kubernetes.io/hostname: "boaz-baremetal2"
+  containers:
+  - name: vdpod
+    namespace: default
+    image: quay.io/bbenshab/vdpod
+    imagePullPolicy: "Always"
+    volumeMounts:
+      - name: vdpod-disk
+        mountPath: "/workload"
+    env:
+        - name: BLOCK_SIZES
+          value: "oltp1,oltp2,oltphw,odss2,odss128,4_cache,64_cache,4,64,4_cache,64_cache,4,64,64"
+        - name: IO_OPERATION
+          value: "oltp1,oltp2,oltphw,odss2,odss128,read,read,read,read,write,write,write,write,read"
+        - name: IO_THREADS
+          value: "5,5,5,5,5,4,4,2,2,4,4,2,2,5"
+        - name: FILES_IO #How file IO will be done
+          value: "oltp1,oltp2,oltphw,odss2,odss128,random,random,random,random,random,random,random,random,random"
+        - name: IO_RATE # an integer or "max"
+          value: "max,max,max,max,max,max,max,max,max,max,max,max,max,max"
+        - name: MIX_PRECENTAGE # used for mixed workload
+          value:
+        #global settings
+        - name: DURATION
+          value: "10"
+        - name: PAUSE #pause after every test in sec
+          value: "0"
+        - name: WARMUP # warmup before any test in sec
+          value: "0"
+        - name: FILES_SELECTION #This parameter allows you to select directories and files for processing either sequentially or randomly
+          value: "random"
+        - name: COMPRESSION_RATIO #ratio is 1:X e.g 2 = 50% compressible
+          value: "2"
+        - name: RUN_FILLUP #will it run a fillup before testing starts yes/no
+          value: "no"
+        #data set settings
+        - name: DIRECTORIES #how many directories to create
+          value: "600"
+        - name: FILES_PER_DIRECTORY
+          value: "10"
+        - name: SIZE_PER_FILE # size in MB
+          value: "10"
+  restartPolicy: "Never"
+  volumes:
+    - name: vdpod-disk
+      namespace: default
+      persistentVolumeClaim:
+        claimName: vdpod-disk
+  resources:
+          requests:
+            cpu: 100m
+            memory: 2Gi
+          limits:
+            cpu: 2
+            memory: 4Gi
+---
