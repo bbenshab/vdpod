@@ -3,7 +3,6 @@ FROM quay.io/centos/centos:stream8
 # copying vdbench
 COPY vdbench50407.zip  /vdbench/vdbench50407.zip
 COPY vdbench_runner.sh /vdbench/vdbench_runner.sh
-RUN chmod +x /./vdbench/vdbench
 
 # installing java
 RUN yum -y install java
@@ -32,6 +31,9 @@ RUN rm -rf /ntfs3g
 
 # extracting vdbench files
 RUN /bin/bash -c "unzip /vdbench/vdbench50407.zip -d /vdbench/"
+
+# make vdbench executable
+RUN chmod +x /vdbench/vdbench
 
 # starting the vdbench runner
 ENTRYPOINT /bin/bash -c "/vdbench/vdbench_runner.sh"

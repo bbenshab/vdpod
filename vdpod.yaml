@@ -29,12 +29,13 @@ spec:
       - name: vdpod-disk
         mountPath: "/workload"
     env:
+       #tests settings
         - name: BLOCK_SIZES
           value: "oltp1,oltp2,oltphw,odss2,odss128,4_cache,64_cache,4,64,4_cache,64_cache,4,64,64"
         - name: IO_OPERATION
           value: "oltp1,oltp2,oltphw,odss2,odss128,read,read,read,read,write,write,write,write,read"
         - name: IO_THREADS
-          value: "5,5,5,5,5,4,4,2,2,4,4,2,2,5"
+          value: "10,10,10,10,10,4,4,2,2,4,4,2,2,5"
         - name: FILES_IO #How file IO will be done
           value: "oltp1,oltp2,oltphw,odss2,odss128,random,random,random,random,random,random,random,random,random"
         - name: IO_RATE # an integer or "max"
@@ -43,11 +44,11 @@ spec:
           value:
         #global settings
         - name: DURATION
-          value: "10"
+          value: "600"
         - name: PAUSE #pause after every test in sec
           value: "0"
         - name: WARMUP # warmup before any test in sec
-          value: "0"
+          value: "30"
         - name: FILES_SELECTION #This parameter allows you to select directories and files for processing either sequentially or randomly
           value: "random"
         - name: COMPRESSION_RATIO #ratio is 1:X e.g 2 = 50% compressible
