@@ -73,3 +73,5 @@ you may also run the pod locally with podman, here is an example of how to run i
 ```
 podman run -v /workload:/workload -e BLOCK_SIZES=oltp1,oltp2,oltphw,odss2,odss128,4_cache,64_cache,4,64,4_cache,64_cache,4,64,64 -e IO_OPERATION=oltp1,oltp2,oltphw,odss2,odss128,read,read,read,read,write,write,write,write,read,write -e IO_THREADS=5,5,5,5,5,4,4,2,2,4,4,2,2,5,5 -e FILES_IO=oltp1,oltp2,oltphw,odss2,odss128,random,random,random,random,random,random,random,random,random,random -e IO_RATE=max,max,max,max,max,max,max,max,max,max,max,max,max,max,max -e MIX_PRECENTAGE= -e DURATION=20 -e PAUSE=0 -e WARMUP=0 -e FILES_SELECTION=random -e COMPRESSION_RATIO=2 -e RUN_FILLUP=no -e SIZE_PER_FILE=10 -e DIRECTORIES=10 -e FILES_PER_DIRECTORY=3 -v /root/vdpod:/vdpod/config -it quay.io/bbenshab/vdpod:latest
 ```
+# Results:<br/>
+The CSV results table will show on the pods logs once the all tests were completed - e.g ```oc logs pod_name```
