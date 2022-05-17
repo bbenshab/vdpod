@@ -173,6 +173,7 @@ for ((r=0; r < ${#block_size[@]} ; r++)); do
          echo "rd=oltphw,fwd=oltphw_*,fwdrate=${io_rate[$r]},format=(restart,yes),elapsed=${tests_duration},interval=5,threads=${io_threads[$r]},pause=${tests_pause},warmup=${warmup}"
         elif [[ ${block_size[$r]} = "odss2" ]];  then
          echo "rd=odss2,fwd=odss2_*,fwdrate=${io_rate[$r]},format=(restart,yes),elapsed=${tests_duration},interval=5,threads=${io_threads[$r]},pause=${tests_pause},warmup=${warmup}"
+	elif [[ ${block_size[$r]} = "odss128" ]];  then
          echo "rd=odss128,fwd=odss128_*,fwdrate=${io_rate[$r]},format=(restart,yes),elapsed=${tests_duration},interval=5,threads=${io_threads[$r]},pause=${tests_pause},warmup=${warmup}"
  fi
 done
