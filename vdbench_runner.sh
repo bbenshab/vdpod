@@ -81,19 +81,19 @@ local real_size
 local write_precent
         real_size=$(echo ${block_size[$r]} | sed 's/[^0-9]*//g')
         if [ ${io_operation[$r]} = "read" ] && [ -z "${mix_precentage[$r]}" ]; then
-	        echo "fwd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fsd=fsd0,operation=${io_operation[$r]},fileio=${files_io[$r]},fileselect=${files_selection},xfersize=${real_size}k,rdpct=100"
-		wd_list[$r]="rd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fwd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fwdrate=${io_rate[$r]},format=restart,elapsed=${tests_duration},interval=5,warmup=${warmup},threads=${io_threads[$r]},pause=${tests_pause}"
+	        echo "fwd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fsd=fsd0,operation=${io_operation[$r]},fileio=${files_io[$r]},fileselect=${files_selection},xfersize=${real_size}k,rdpct=100,openflags=directio"
+		wd_list[$r]="rd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fwd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fwdrate=${io_rate[$r]},format=restart,elapsed=${tests_duration},interval=5,warmup=${warmup},threads=${io_threads[$r]},pause=${tests_pause},whpct=100,rhpct=100,hitarea=$(( real_size * 5 ))k"
 		elif [ ${io_operation[$r]} = "read" ] && [ -n "${mix_precentage[$r]}" ]; then
-		echo "fwd=${real_size}kb_cache_${}pct_${io_operation[$r]}_${io_threads[$r]}threads,fsd=fsd0,operation=${io_operation[$r]},fileio=${files_io[$r]},fileselect=${files_selection},xfersize=${real_size}k,rdpct=${mix_precentage[$r]}"
-		wd_list[$r]="rd=${real_size}kb_cache_${mix_precentage[$r]}pct_${io_operation[$r]}_${io_threads[$r]}threads,fwd=${real_size}kb_cache_${mix_precentage[$r]}pct_${io_operation[$r]}_${io_threads[$r]}threads,fwdrate=${io_rate[$r]},format=restart,elapsed=${tests_duration},interval=5,warmup=${warmup},threads=${io_threads[$r]},pause=${tests_pause}"
+		echo "fwd=${real_size}kb_cache_${mix_precentage[$r]}pct_${io_operation[$r]}_${io_threads[$r]}threads,fsd=fsd0,operation=${io_operation[$r]},fileio=${files_io[$r]},fileselect=${files_selection},xfersize=${real_size}k,rdpct=${mix_precentage[$r]},openflags=directio"
+		wd_list[$r]="rd=${real_size}kb_cache_${mix_precentage[$r]}pct_${io_operation[$r]}_${io_threads[$r]}threads,fwd=${real_size}kb_cache_${mix_precentage[$r]}pct_${io_operation[$r]}_${io_threads[$r]}threads,fwdrate=${io_rate[$r]},format=restart,elapsed=${tests_duration},interval=5,warmup=${warmup},threads=${io_threads[$r]},pause=${tests_pause},whpct=100,rhpct=100,hitarea=$(( real_size * 5 ))k"
 fi
         if [ ${io_operation[$r]} = "write" ] && [ -z ${mix_precentage[$r]} ]; then
-        echo "fwd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fsd=fsd0,operation=${io_operation[$r]},fileio=${files_io[$r]},fileselect=${files_selection},xfersize=${real_size}k,rdpct=0"
-	wd_list[$r]="rd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fwd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fwdrate=${io_rate[$r]},format=restart,elapsed=${tests_duration},interval=5,warmup=${warmup},threads=${io_threads[$r]},pause=${tests_pause}"
+        echo "fwd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fsd=fsd0,operation=${io_operation[$r]},fileio=${files_io[$r]},fileselect=${files_selection},xfersize=${real_size}k,rdpct=0,openflags=directio"
+	wd_list[$r]="rd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fwd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fwdrate=${io_rate[$r]},format=restart,elapsed=${tests_duration},interval=5,warmup=${warmup},threads=${io_threads[$r]},pause=${tests_pause},whpct=100,rhpct=100,hitarea=$(( real_size * 5 ))k"
         elif [ ${io_operation[$r]} = "write" ] && [ -n ${mix_precentage[$r]} ];  then
         write_precent=$((100-${mix_precentage[$r]}))
-        echo "fwd=${real_size}kb_cache_${write_precent}pct_${io_operation[$r]}_${io_threads[$r]}threads,fsd=fsd0,operation=${io_operation[$r]},fileio=${files_io[$r]},fileselect=${files_selection},xfersize=${real_size}k,rdpct=${write_precent}"
-	wd_list[$r]="rd=${real_size}kb_cache_${write_precent}pct_${io_operation[$r]}_${io_threads[$r]}threads,fwd=${real_size}kb_cache_${write_precent}pct_${io_operation[$r]}_${io_threads[$r]}threads,fwdrate=${io_rate[$r]},format=restart,elapsed=${tests_duration},interval=5,warmup=${warmup},threads=${io_threads[$r]},pause=${tests_pause}"
+        echo "fwd=${real_size}kb_cache_${write_precent}pct_${io_operation[$r]}_${io_threads[$r]}threads,fsd=fsd0,operation=${io_operation[$r]},fileio=${files_io[$r]},fileselect=${files_selection},xfersize=${real_size}k,rdpct=${write_precent},openflags=directio"
+	wd_list[$r]="rd=${real_size}kb_cache_${write_precent}pct_${io_operation[$r]}_${io_threads[$r]}threads,fwd=${real_size}kb_cache_${write_precent}pct_${io_operation[$r]}_${io_threads[$r]}threads,fwdrate=${io_rate[$r]},format=restart,elapsed=${tests_duration},interval=5,warmup=${warmup},threads=${io_threads[$r]},pause=${tests_pause},whpct=100,rhpct=100,hitarea=$(( real_size * 5 ))k"
 fi
 }
 
@@ -121,35 +121,35 @@ fi
 
 for ((r=0; r < ${#block_size[@]} ; r++)); do
 	if [[ ${block_size[$r]} = "oltp1" ]];  then
-		echo "fwd=oltp1_1,fsd=fsd0,operation=read,fileio=random,fileselect=random,xfersize=4k,rdpct=100,skew=10"
-		echo "fwd=oltp1_2,fsd=fsd0,openflags=directio,operation=read,fileio=random,fileselect=random,xfersize=4k,rdpct=100,skew=35"
-		echo "fwd=oltp1_3,fsd=fsd0,openflags=directio,operation=write,fileio=random,fileselect=random,xfersize=4k,rdpct=0,skew=35"
-		echo "fwd=oltp1_4,fsd=fsd0,openflags=directio,operation=read,fileio=sequential,fileselect=random,xfersize=4k,skew=5"
-		echo "fwd=oltp1_5,fsd=fsd0,openflags=directio,operation=write,fileio=sequential,fileselect=random,xfersize=4k,skew=15"
+		echo "fwd=oltp1_1,fsd=fsd0,operation=read,fileio=random,fileselect=random,xfersize=4k,rdpct=100,skew=10,threads=16"
+		echo "fwd=oltp1_2,fsd=fsd0,openflags=directio,operation=read,fileio=random,fileselect=random,xfersize=4k,rdpct=100,skew=35,threads=16"
+		echo "fwd=oltp1_3,fsd=fsd0,openflags=directio,operation=write,fileio=random,fileselect=random,xfersize=4k,rdpct=0,skew=35,threads=16"
+		echo "fwd=oltp1_4,fsd=fsd0,openflags=directio,operation=read,fileio=sequential,fileselect=random,xfersize=4k,skew=5,threads=16"
+		echo "fwd=oltp1_5,fsd=fsd0,openflags=directio,operation=write,fileio=sequential,fileselect=random,xfersize=4k,skew=15,threads=16"
 	elif [[ ${block_size[$r]} = "oltp2" ]];  then
-		echo "fwd=oltp2_1,fsd=fsd0,operation=read,fileio=random,fileselect=random,xfersize=8k,rdpct=100,skew=20"
-		echo "fwd=oltp2_2,fsd=fsd0,openflags=directio,operation=read,fileio=random,fileselect=random,xfersize=8k,rdpct=100,skew=45"
-		echo "fwd=oltp2_3,fsd=fsd0,openflags=directio,operation=write,fileio=random,fileselect=random,xfersize=8k,rdpct=0,skew=15"
-		echo "fwd=oltp2_4,fsd=fsd0,openflags=directio,operation=read,fileio=sequential,fileselect=sequential,xfersize=64k,skew=10"
-		echo "fwd=oltp2_5,fsd=fsd0,openflags=directio,operation=write,fileio=sequential,fileselect=sequential,xfersize=64k,skew=10"
+		echo "fwd=oltp2_1,fsd=fsd0,operation=read,fileio=random,fileselect=random,xfersize=8k,rdpct=100,skew=20,threads=16"
+		echo "fwd=oltp2_2,fsd=fsd0,openflags=directio,operation=read,fileio=random,fileselect=random,xfersize=8k,rdpct=100,skew=45,threads=16"
+		echo "fwd=oltp2_3,fsd=fsd0,openflags=directio,operation=write,fileio=random,fileselect=random,xfersize=8k,rdpct=0,skew=15,threads=16"
+		echo "fwd=oltp2_4,fsd=fsd0,openflags=directio,operation=read,fileio=sequential,fileselect=sequential,xfersize=64k,skew=10,threads=16"
+		echo "fwd=oltp2_5,fsd=fsd0,openflags=directio,operation=write,fileio=sequential,fileselect=sequential,xfersize=64k,skew=10,threads=16"
 	elif [[ ${block_size[$r]} = "oltphw" ]];  then
-		echo "fwd=oltphw_1,fsd=fsd0,operation=read,fileio=random,fileselect=random,xfersize=8k,rdpct=100,skew=10"
-		echo "fwd=oltphw_2,fsd=fsd0,openflags=directio,operation=read,fileio=random,fileselect=random,xfersize=8k,rdpct=100,skew=35"
-		echo "fwd=oltphw_3,fsd=fsd0,openflags=directio,operation=write,fileio=random,fileselect=random,xfersize=8k,rdpct=0,skew=35"
-		echo "fwd=oltphw_4,fsd=fsd0,openflags=directio,operation=read,fileio=sequential,fileselect=sequential,xfersize=64k,skew=5"
-		echo "fwd=oltphw_5,fsd=fsd0,openflags=directio,operation=write,fileio=sequential,fileselect=sequential,xfersize=64k,skew=15"
+		echo "fwd=oltphw_1,fsd=fsd0,operation=read,fileio=random,fileselect=random,xfersize=8k,rdpct=100,skew=10,threads=16"
+		echo "fwd=oltphw_2,fsd=fsd0,openflags=directio,operation=read,fileio=random,fileselect=random,xfersize=8k,rdpct=100,skew=35,threads=16"
+		echo "fwd=oltphw_3,fsd=fsd0,openflags=directio,operation=write,fileio=random,fileselect=random,xfersize=8k,rdpct=0,skew=35,threads=16"
+		echo "fwd=oltphw_4,fsd=fsd0,openflags=directio,operation=read,fileio=sequential,fileselect=sequential,xfersize=64k,skew=5,threads=16"
+		echo "fwd=oltphw_5,fsd=fsd0,openflags=directio,operation=write,fileio=sequential,fileselect=sequential,xfersize=64k,skew=15,threads=16"
         elif [[ ${block_size[$r]} = "odss2" ]];  then
-		echo "fwd=odss2_1_vm0,fsd=fsd0,operation=read,fileio=random,fileselect=random,xfersize=4k,rdpct=100,skew=0"
-		echo "fwd=odss2_2_vm0,fsd=fsd0,openflags=directio,operation=read,fileio=random,fileselect=random,xfersize=4k,rdpct=100,skew=15"
-		echo "fwd=odss2_3_vm0,fsd=fsd0,openflags=directio,operation=write,fileio=random,fileselect=random,xfersize=4k,rdpct=0,skew=5"
-		echo "fwd=odss2_4_vm0,fsd=fsd0,openflags=directio,operation=read,fileio=sequential,fileselect=sequential,xfersize=64k,skew=70"
-		echo "fwd=odss2_5_vm0,fsd=fsd0,openflags=directio,operation=write,fileio=sequential,fileselect=sequential,xfersize=64k,skew=10"
+		echo "fwd=odss2_1_vm0,fsd=fsd0,operation=read,fileio=random,fileselect=random,xfersize=4k,rdpct=100,skew=0,threads=16"
+		echo "fwd=odss2_2_vm0,fsd=fsd0,openflags=directio,operation=read,fileio=random,fileselect=random,xfersize=4k,rdpct=100,skew=15,threads=16"
+		echo "fwd=odss2_3_vm0,fsd=fsd0,openflags=directio,operation=write,fileio=random,fileselect=random,xfersize=4k,rdpct=0,skew=5,threads=16"
+		echo "fwd=odss2_4_vm0,fsd=fsd0,openflags=directio,operation=read,fileio=sequential,fileselect=sequential,xfersize=64k,skew=70,threads=16"
+		echo "fwd=odss2_5_vm0,fsd=fsd0,openflags=directio,operation=write,fileio=sequential,fileselect=sequential,xfersize=64k,skew=10,threads=16"
 	elif [[ ${block_size[$r]} = "odss128" ]];  then
-		echo "fwd=odss128_1,fsd=fsd0,operation=read,fileio=random,fileselect=random,xfersize=4k,rdpct=100,skew=18"
-		echo "fwd=odss128_2,fsd=fsd0,openflags=directio,operation=read,fileio=random,fileselect=random,xfersize=4k,rdpct=100,skew=18"
-		echo "fwd=odss128_3,fsd=fsd0,openflags=directio,operation=write,fileio=random,fileselect=random,xfersize=4k,rdpct=0,skew=4"
-		echo "fwd=odss128_4,fsd=fsd0,openflags=directio,operation=read,fileio=sequential,fileselect=sequential,xfersize=64k,skew=48"
-		echo "fwd=odss128_5,fsd=fsd0,openflags=directio,operation=write,fileio=sequential,fileselect=sequential,xfersize=64k,skew=12"
+		echo "fwd=odss128_1,fsd=fsd0,operation=read,fileio=random,fileselect=random,xfersize=4k,rdpct=100,skew=18,threads=16"
+		echo "fwd=odss128_2,fsd=fsd0,openflags=directio,operation=read,fileio=random,fileselect=random,xfersize=4k,rdpct=100,skew=18,threads=16"
+		echo "fwd=odss128_3,fsd=fsd0,openflags=directio,operation=write,fileio=random,fileselect=random,xfersize=4k,rdpct=0,skew=4,threads=16"
+		echo "fwd=odss128_4,fsd=fsd0,openflags=directio,operation=read,fileio=sequential,fileselect=sequential,xfersize=64k,skew=48,threads=16"
+		echo "fwd=odss128_5,fsd=fsd0,openflags=directio,operation=write,fileio=sequential,fileselect=sequential,xfersize=64k,skew=12,threads=16"
 	elif [[ ${block_size[$r],,} = *"cache"* ]];  then
 		check_if_cache_or_mixed_cache $r
 	else
