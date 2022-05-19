@@ -81,18 +81,18 @@ local real_size
 local write_precent
         real_size=$(echo ${block_size[$r]} | sed 's/[^0-9]*//g')
         if [ ${io_operation[$r]} = "read" ] && [ -z "${mix_precentage[$r]}" ]; then
-	        echo "fwd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fsd=fsd0,operation=${io_operation[$r]},fileio=${files_io[$r]},fileselect=${files_selection},xfersize=${real_size}k,rdpct=100,openflags=directio"
+	        echo "fwd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fsd=fsd0,operation=${io_operation[$r]},fileio=${files_io[$r]},fileselect=${files_selection},xfersize=${real_size}k,rdpct=100"
 		wd_list[$r]="rd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fwd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fwdrate=${io_rate[$r]},format=restart,elapsed=${tests_duration},interval=5,warmup=${warmup},threads=${io_threads[$r]},pause=${tests_pause},whpct=100,rhpct=100,hitarea=$(( real_size * 5 ))k"
 		elif [ ${io_operation[$r]} = "read" ] && [ -n "${mix_precentage[$r]}" ]; then
-		echo "fwd=${real_size}kb_cache_${mix_precentage[$r]}pct_${io_operation[$r]}_${io_threads[$r]}threads,fsd=fsd0,operation=${io_operation[$r]},fileio=${files_io[$r]},fileselect=${files_selection},xfersize=${real_size}k,rdpct=${mix_precentage[$r]},openflags=directio"
+		echo "fwd=${real_size}kb_cache_${mix_precentage[$r]}pct_${io_operation[$r]}_${io_threads[$r]}threads,fsd=fsd0,operation=${io_operation[$r]},fileio=${files_io[$r]},fileselect=${files_selection},xfersize=${real_size}k,rdpct=${mix_precentage[$r]}"
 		wd_list[$r]="rd=${real_size}kb_cache_${mix_precentage[$r]}pct_${io_operation[$r]}_${io_threads[$r]}threads,fwd=${real_size}kb_cache_${mix_precentage[$r]}pct_${io_operation[$r]}_${io_threads[$r]}threads,fwdrate=${io_rate[$r]},format=restart,elapsed=${tests_duration},interval=5,warmup=${warmup},threads=${io_threads[$r]},pause=${tests_pause},whpct=100,rhpct=100,hitarea=$(( real_size * 5 ))k"
 fi
         if [ ${io_operation[$r]} = "write" ] && [ -z ${mix_precentage[$r]} ]; then
-        echo "fwd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fsd=fsd0,operation=${io_operation[$r]},fileio=${files_io[$r]},fileselect=${files_selection},xfersize=${real_size}k,rdpct=0,openflags=directio"
+        echo "fwd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fsd=fsd0,operation=${io_operation[$r]},fileio=${files_io[$r]},fileselect=${files_selection},xfersize=${real_size}k,rdpct=0"
 	wd_list[$r]="rd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fwd=${real_size}kb_cache_${io_operation[$r]}_${io_threads[$r]}threads,fwdrate=${io_rate[$r]},format=restart,elapsed=${tests_duration},interval=5,warmup=${warmup},threads=${io_threads[$r]},pause=${tests_pause},whpct=100,rhpct=100,hitarea=$(( real_size * 5 ))k"
         elif [ ${io_operation[$r]} = "write" ] && [ -n ${mix_precentage[$r]} ];  then
         write_precent=$((100-${mix_precentage[$r]}))
-        echo "fwd=${real_size}kb_cache_${write_precent}pct_${io_operation[$r]}_${io_threads[$r]}threads,fsd=fsd0,operation=${io_operation[$r]},fileio=${files_io[$r]},fileselect=${files_selection},xfersize=${real_size}k,rdpct=${write_precent},openflags=directio"
+        echo "fwd=${real_size}kb_cache_${write_precent}pct_${io_operation[$r]}_${io_threads[$r]}threads,fsd=fsd0,operation=${io_operation[$r]},fileio=${files_io[$r]},fileselect=${files_selection},xfersize=${real_size}k,rdpct=${write_precent}"
 	wd_list[$r]="rd=${real_size}kb_cache_${write_precent}pct_${io_operation[$r]}_${io_threads[$r]}threads,fwd=${real_size}kb_cache_${write_precent}pct_${io_operation[$r]}_${io_threads[$r]}threads,fwdrate=${io_rate[$r]},format=restart,elapsed=${tests_duration},interval=5,warmup=${warmup},threads=${io_threads[$r]},pause=${tests_pause},whpct=100,rhpct=100,hitarea=$(( real_size * 5 ))k"
 fi
 }
