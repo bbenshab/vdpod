@@ -27,6 +27,7 @@ declare tests_pause
 declare tests_duration
 declare run_fillup
 declare warmup
+declare logs_dir
 
 #dataset params
 declare directories
@@ -51,6 +52,7 @@ compression_ratio=$(echo $COMPRESSION_RATIO)
 warmup=$(echo $WARMUP)
 fillup_max_data=$((${directories}*${files_per_directory}*${size_per_file})) 
 run_fillup=$(echo $RUN_FILLUP)
+logs_dir=$(echo $LOGS_DIR)
 }
 
 generate_workload_config(){
@@ -244,9 +246,9 @@ check_run_fillup
 
 start_run(){
 generate_workload_config > ${tmp_test_file}
-/./vdbench/vdbench -c -f ${tmp_test_file} -o /tmp > /dev/null #2>&1
-/./vdbench/vdbench parseflat -i /tmp/flatfile.html -o /tmp/results.csv -c Run Xfersize Threads Reqrate Rate Resp Resp_std Resp_max MB/sec MB_read MB_write Read_rate Read_rate_std Read_rate_max Read_resp Read_resp_std Read_resp_max Write_rate Write_rate_std Write_rate_max Write_resp Write_resp_std Write_resp_max Mkdir_rate Mkdir_rate_std Mkdir_rate_max Mkdir_resp Mkdir_resp_std Mkdir_resp_max Rmdir_rate Rmdir_rate_std Rmdir_rate_max Rmdir_resp Rmdir_resp_std Rmdir_resp_max Create_rate Create_rate_std Create_rate_max Create_resp Create_resp_std Create_resp_max Open_rate Open_rate_std Open_rate_max Open_resp Open_resp_std Open_resp_max Close_rate Close_rate_std Close_rate_max Close_resp Close_resp_std Close_resp_max Delete_rate Delete_rate_std Delete_rate_max Delete_resp Delete_resp_std Delete_resp_max Getattr_rate Getattr_rate_std Getattr_rate_max Getattr_resp Getattr_resp_std Getattr_resp_max Setattr_rate Setattr_rate_std Setattr_rate_max Setattr_resp Setattr_resp_std Setattr_resp_max Access_rate Access_rate_std Access_rate_max Access_resp Access_resp_std Access_resp_max Compratio Dedupratio cpu_used cpu_user cpu_kernel cpu_wait cpu_idle -a > /dev/null 2>&1
-cat /tmp/results.csv|grep -v format_for
+/./vdbench/vdbench -c -f ${tmp_test_file} -o ${logs_dir} > /dev/null 2>&1
+/./vdbench/vdbench parseflat -i ${logs_dir}flatfile.html -o ${logs_dir}results.csv -c Run Xfersize Threads Reqrate Rate Resp Resp_std Resp_max MB/sec MB_read MB_write Read_rate Read_rate_std Read_rate_max Read_resp Read_resp_std Read_resp_max Write_rate Write_rate_std Write_rate_max Write_resp Write_resp_std Write_resp_max Mkdir_rate Mkdir_rate_std Mkdir_rate_max Mkdir_resp Mkdir_resp_std Mkdir_resp_max Rmdir_rate Rmdir_rate_std Rmdir_rate_max Rmdir_resp Rmdir_resp_std Rmdir_resp_max Create_rate Create_rate_std Create_rate_max Create_resp Create_resp_std Create_resp_max Open_rate Open_rate_std Open_rate_max Open_resp Open_resp_std Open_resp_max Close_rate Close_rate_std Close_rate_max Close_resp Close_resp_std Close_resp_max Delete_rate Delete_rate_std Delete_rate_max Delete_resp Delete_resp_std Delete_resp_max Getattr_rate Getattr_rate_std Getattr_rate_max Getattr_resp Getattr_resp_std Getattr_resp_max Setattr_rate Setattr_rate_std Setattr_rate_max Setattr_resp Setattr_resp_std Setattr_resp_max Access_rate Access_rate_std Access_rate_max Access_resp Access_resp_std Access_resp_max Compratio Dedupratio cpu_used cpu_user cpu_kernel cpu_wait cpu_idle -a > /dev/null 2>&1
+cat ${logs_dir}results.csv|grep -v format_for
 }
 
 get_tests_parms_from_env

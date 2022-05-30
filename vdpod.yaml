@@ -30,31 +30,33 @@ spec:
         mountPath: "/workload"
     env:
        #tests settings
-        - name: BLOCK_SIZES
+        - name: BLOCK_SIZES # can be an application pattern (oltp1,oltp2,oltphw,odss2,odss128) a block size or cache hit test
           value: "oltp1,oltp2,oltphw,odss2,odss128,4_cache,64_cache,4,64,4_cache,64_cache,4,64,64"
-        - name: IO_OPERATION
+        - name: IO_OPERATION #type of IO operation should be application pattern if one was choosen, read or write.
           value: "oltp1,oltp2,oltphw,odss2,odss128,read,read,read,read,write,write,write,write,read"
-        - name: IO_THREADS
+        - name: IO_THREADS #number of threads per test
           value: "10,10,10,10,10,4,4,2,2,4,4,2,2,5"
-        - name: FILES_IO #How file IO will be done
+        - name: FILES_IO #How file IO will be done should be application pattern if one was choosen, random or sequential 
           value: "oltp1,oltp2,oltphw,odss2,odss128,random,random,random,random,random,random,random,random,random"
-        - name: IO_RATE # an integer or "max"
+        - name: IO_RATE # set a limit to the IO rate with an integer or "max" for no limit
           value: "max,max,max,max,max,max,max,max,max,max,max,max,max,max"
-        - name: MIX_PRECENTAGE # used for mixed workload
+        - name: MIX_PRECENTAGE # used for mixed workload e.g if IO_OPERATION was set to write and value is 40 then you will get 40% writes and 60% reads
           value:
         #global settings
-        - name: DURATION
-          value: "600"
+        - name: DURATION #test duration
+          value: "10"
         - name: PAUSE #pause after every test in sec
           value: "0"
         - name: WARMUP # warmup before any test in sec
-          value: "30"
+          value: "0"
         - name: FILES_SELECTION #This parameter allows you to select directories and files for processing either sequentially or randomly
           value: "random"
         - name: COMPRESSION_RATIO #ratio is 1:X e.g 2 = 50% compressible
           value: "2"
         - name: RUN_FILLUP #will it run a fillup before testing starts yes/no
           value: "no"
+        - name: LOGS_DIR # logs directory
+          value: "/workload/"
         #data set settings
         - name: DIRECTORIES #how many directories to create
           value: "600"
