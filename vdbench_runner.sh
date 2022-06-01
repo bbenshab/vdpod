@@ -8,6 +8,7 @@ declare error="[warning]"
 declare workload_path="/workload"
 declare tmp_test_file=`mktemp`
 declare dbs_patterns=("oltp1" "oltp2" "oltphw" "odss2" "odss128")
+declare -A tests_files
 declare fillup_max_data
 declare -A fwd_list
 declare -A wd_list
@@ -56,7 +57,7 @@ logs_dir=$(echo $LOGS_DIR)
 }
 
 generate_workload_config(){
-local r
+local r=$1
 
 #general settings
 echo "create_anchors=yes"
@@ -72,13 +73,12 @@ echo "fsd=default,depth=0,width=${directories},files=${files_per_directory},size
 echo "fsd=fsd0,anchor=${workload_path}"
 
 #generate fillup definition
-if [[ ${run_fillup} = "yes" ]];  then
+if [ ${run_fillup} = "yes" ] && [ ${r} -eq 0 ];  then
 echo "fwd=fillup,fsd=fsd0,openflags=directio,operation=write,fileio=sequential,fileselect=sequential,xfersize=1024k,threads=1"
 fi
 
 #generate workload definition
 check_if_cache_or_mixed_cache(){
-local r=$1
 local real_size
 local write_precent
         real_size=$(echo ${block_size[$r]} | sed 's/[^0-9]*//g')
@@ -119,9 +119,6 @@ fi
 fi
 }
 
-
-
-for ((r=0; r < ${#block_size[@]} ; r++)); do
 	if [[ ${block_size[$r]} = "oltp1" ]];  then
 		echo "fwd=oltp1_1,fsd=fsd0,operation=read,fileio=random,fileselect=random,xfersize=4k,rdpct=100,skew=10,threads=16"
 		echo "fwd=oltp1_2,fsd=fsd0,openflags=directio,operation=read,fileio=random,fileselect=random,xfersize=4k,rdpct=100,skew=35,threads=16"
@@ -157,16 +154,14 @@ for ((r=0; r < ${#block_size[@]} ; r++)); do
 	else
 		check_if_mixed_read_write $r
 	fi
-done
 
 
 #generate fillup run definition
-if [[ ${run_fillup} = "yes" ]];  then
+if [ ${run_fillup} = "yes" ] && [ ${r} -eq 0 ];  then
 echo "rd=fillup,fwd=fillup,fwdrate=max,format=restart,elapsed=10000000,interval=5,warmup=0,threads=1,pause=${tests_pause},maxdata=${fillup_max_data}mb"
 fi
 
 #generate db's work definition
-for ((r=0; r < ${#block_size[@]} ; r++)); do
 	if [[ ${block_size[$r]} = "oltp1" ]];  then
 	 echo "rd=oltp1,fwd=oltp1_*,fwdrate=${io_rate[$r]},format=(restart,yes),elapsed=${tests_duration},interval=5,threads=${io_threads[$r]},pause=${tests_pause},warmup=${warmup}"
 	elif [[ ${block_size[$r]} = "oltp2" ]];  then
@@ -178,8 +173,7 @@ for ((r=0; r < ${#block_size[@]} ; r++)); do
 	elif [[ ${block_size[$r]} = "odss128" ]];  then
          echo "rd=odss128,fwd=odss128_*,fwdrate=${io_rate[$r]},format=(restart,yes),elapsed=${tests_duration},interval=5,threads=${io_threads[$r]},pause=${tests_pause},warmup=${warmup}"
  fi
-done
-printf '%s\n' "${wd_list[@]}"
+ printf '%s\n' "${wd_list[$r]}"
 }
 
 test_user_settings(){
@@ -244,14 +238,34 @@ check_run_fillup
 #did_check_pass
 }
 
+create_tests_files(){
+for ((r=0; r < ${#block_size[@]} ; r++)); do
+	generate_workload_config $r > ${logs_dir}test_${r}
+done
+}
+
 start_run(){
-generate_workload_config > ${tmp_test_file}
-/./vdbench/vdbench -c -f ${tmp_test_file} -o ${logs_dir} > /dev/null 2>&1
-/./vdbench/vdbench parseflat -i ${logs_dir}flatfile.html -o ${logs_dir}results.csv -c Run Xfersize Threads Reqrate Rate Resp Resp_std Resp_max MB/sec MB_read MB_write Read_rate Read_rate_std Read_rate_max Read_resp Read_resp_std Read_resp_max Write_rate Write_rate_std Write_rate_max Write_resp Write_resp_std Write_resp_max Mkdir_rate Mkdir_rate_std Mkdir_rate_max Mkdir_resp Mkdir_resp_std Mkdir_resp_max Rmdir_rate Rmdir_rate_std Rmdir_rate_max Rmdir_resp Rmdir_resp_std Rmdir_resp_max Create_rate Create_rate_std Create_rate_max Create_resp Create_resp_std Create_resp_max Open_rate Open_rate_std Open_rate_max Open_resp Open_resp_std Open_resp_max Close_rate Close_rate_std Close_rate_max Close_resp Close_resp_std Close_resp_max Delete_rate Delete_rate_std Delete_rate_max Delete_resp Delete_resp_std Delete_resp_max Getattr_rate Getattr_rate_std Getattr_rate_max Getattr_resp Getattr_resp_std Getattr_resp_max Setattr_rate Setattr_rate_std Setattr_rate_max Setattr_resp Setattr_resp_std Setattr_resp_max Access_rate Access_rate_std Access_rate_max Access_resp Access_resp_std Access_resp_max Compratio Dedupratio cpu_used cpu_user cpu_kernel cpu_wait cpu_idle -a > /dev/null 2>&1
-cat ${logs_dir}results.csv|grep -v format_for
+for ((r=0; r < ${#block_size[@]} ; r++)); do
+
+if [ ${r} -eq 0 ];  then
+	/./vdbench/vdbench -c -f ${logs_dir}test_${r} -o ${logs_dir} > /dev/null 2>&1
+	/./vdbench/vdbench parseflat -i ${logs_dir}flatfile.html -o ${logs_dir}test_${r}_results.csv -c Run Xfersize Threads Reqrate Rate Resp Resp_std Resp_max MB/sec MB_read MB_write Read_rate Read_rate_std Read_rate_max Read_resp Read_resp_std Read_resp_max Write_rate Write_rate_std Write_rate_max Write_resp Write_resp_std Write_resp_max Mkdir_rate Mkdir_rate_std Mkdir_rate_max Mkdir_resp Mkdir_resp_std Mkdir_resp_max Rmdir_rate Rmdir_rate_std Rmdir_rate_max Rmdir_resp Rmdir_resp_std Rmdir_resp_max Create_rate Create_rate_std Create_rate_max Create_resp Create_resp_std Create_resp_max Open_rate Open_rate_std Open_rate_max Open_resp Open_resp_std Open_resp_max Close_rate Close_rate_std Close_rate_max Close_resp Close_resp_std Close_resp_max Delete_rate Delete_rate_std Delete_rate_max Delete_resp Delete_resp_std Delete_resp_max Getattr_rate Getattr_rate_std Getattr_rate_max Getattr_resp Getattr_resp_std Getattr_resp_max Setattr_rate Setattr_rate_std Setattr_rate_max Setattr_resp Setattr_resp_std Setattr_resp_max Access_rate Access_rate_std Access_rate_max Access_resp Access_resp_std Access_resp_max Compratio Dedupratio cpu_used cpu_user cpu_kernel cpu_wait cpu_idle -a > /dev/null 2>&1
+	cat ${logs_dir}test_${r}_results.csv|grep -v format_for
+
+else
+	/./vdbench/vdbench -f ${logs_dir}test_${r} -o ${logs_dir} > /dev/null 2>&1
+	/./vdbench/vdbench parseflat -i ${logs_dir}flatfile.html -o ${logs_dir}test_${r}_results.csv -c Run Xfersize Threads Reqrate Rate Resp Resp_std Resp_max MB/sec MB_read MB_write Read_rate Read_rate_std Read_rate_max Read_resp Read_resp_std Read_resp_max Write_rate Write_rate_std Write_rate_max Write_resp Write_resp_std Write_resp_max Mkdir_rate Mkdir_rate_std Mkdir_rate_max Mkdir_resp Mkdir_resp_std Mkdir_resp_max Rmdir_rate Rmdir_rate_std Rmdir_rate_max Rmdir_resp Rmdir_resp_std Rmdir_resp_max Create_rate Create_rate_std Create_rate_max Create_resp Create_resp_std Create_resp_max Open_rate Open_rate_std Open_rate_max Open_resp Open_resp_std Open_resp_max Close_rate Close_rate_std Close_rate_max Close_resp Close_resp_std Close_resp_max Delete_rate Delete_rate_std Delete_rate_max Delete_resp Delete_resp_std Delete_resp_max Getattr_rate Getattr_rate_std Getattr_rate_max Getattr_resp Getattr_resp_std Getattr_resp_max Setattr_rate Setattr_rate_std Setattr_rate_max Setattr_resp Setattr_resp_std Setattr_resp_max Access_rate Access_rate_std Access_rate_max Access_resp Access_resp_std Access_resp_max Compratio Dedupratio cpu_used cpu_user cpu_kernel cpu_wait cpu_idle -a > /dev/null 2>&1
+	if [ -f "${logs_dir}test_${r}_results.csv" ]; then
+		cat ${logs_dir}test_${r}_results.csv|tail -1
+	else
+		echo "result file for tests num $r was not found please check you settings"
+	fi
+
+fi
+done
 }
 
 get_tests_parms_from_env
 test_user_settings
+create_tests_files
 start_run
-echo ${wd_list[$r]}
